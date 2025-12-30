@@ -48,8 +48,6 @@ jobs:
     name: Run tests
     needs: build
     uses: ./.github/workflows/tests.yml
-    with:
-      python-version: ${{ env.PYTHON_VERSION }}
 
   publish:
     name: Publish to PyPI
