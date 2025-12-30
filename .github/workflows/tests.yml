@@ -48,8 +48,8 @@ jobs:
           RABBITMQ_DEFAULT_USER: guest
           RABBITMQ_DEFAULT_PASS: guest
         volumes:
-          - ".ci/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro"
-          - ".ci/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro"
+          - "${{ github.workspace }}/.ci/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro"
+          - "${{ github.workspace }}/.ci/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro"
         options: >-
           --health-cmd "rabbitmq-diagnostics -q ping"
           --health-interval 5s
@@ -84,15 +84,15 @@ jobs:
         run: |
           python -m pip install "scitrera-rt-data[all,dev]"
 
-#      - name: Wait for RabbitMQ Streams port
-#        run: |
-#          for i in {1..30}; do
-#            (echo > /dev/tcp/rabbitmq/5552) >/dev/null 2>&1 && echo "RabbitMQ Streams ready" && exit 0
-#            echo "Waiting for RabbitMQ Streams..."
-#            sleep 2
-#          done
-#          echo "RabbitMQ Streams not ready in time" >&2
-#          exit 1
+      #      - name: Wait for RabbitMQ Streams port
+      #        run: |
+      #          for i in {1..30}; do
+      #            (echo > /dev/tcp/rabbitmq/5552) >/dev/null 2>&1 && echo "RabbitMQ Streams ready" && exit 0
+      #            echo "Waiting for RabbitMQ Streams..."
+      #            sleep 2
+      #          done
+      #          echo "RabbitMQ Streams not ready in time" >&2
+      #          exit 1
 
       - name: Run tests
         env:
