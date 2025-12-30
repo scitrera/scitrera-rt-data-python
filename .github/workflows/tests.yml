@@ -93,14 +93,14 @@ jobs:
 
       - name: Run tests
         env:
-          REDIS_HOST: "redis"
+          REDIS_HOST: "localhost"
           REDIS_PORT: "6379"
           REDIS_DB: "0"
           REDIS_PASSWORD: ""
-          PG_DSN: "postgresql://testuser:testpass@postgres:5432/testdb"
+          PG_DSN: "postgresql://testuser:testpass@localhost:5432/testdb"
           RABBITMQ_DIRECT: true
           RABBITMQ_MTLS: false
-          RABBITMQ_HOST: "rabbitmq"
+          RABBITMQ_HOST: "localhost"
           RABBITMQ_USERNAME: "guest"
           RABBITMQ_PASSWORD: "guest"
           RABBITMQ_PORT: "5552"
