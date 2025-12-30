@@ -48,8 +48,8 @@ jobs:
           RABBITMQ_DEFAULT_USER: guest
           RABBITMQ_DEFAULT_PASS: guest
         volumes:
-          - "${{ github.workspace }}/.ci/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro"
-          - "${{ github.workspace }}/.ci/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro"
+          - ${{ github.workspace }}/.ci/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+          - ${{ github.workspace }}/.ci/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
         options: >-
           --health-cmd "rabbitmq-diagnostics -q ping"
           --health-interval 5s
