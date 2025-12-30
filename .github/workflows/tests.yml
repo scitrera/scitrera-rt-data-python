@@ -39,7 +39,7 @@ jobs:
           --health-retries 20
 
       rabbitmq:
-        image: rabbitmq:4-management
+        image: ghcr.io/scitrera/rabbitmq-stream:4-management
         ports:
           - 5552:5552
           - 5672:5672
@@ -47,9 +47,6 @@ jobs:
         env:
           RABBITMQ_DEFAULT_USER: guest
           RABBITMQ_DEFAULT_PASS: guest
-        volumes:
-          - ${{ github.workspace }}/.ci/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
-          - ${{ github.workspace }}/.ci/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
         options: >-
           --health-cmd "rabbitmq-diagnostics -q ping"
           --health-interval 5s
