@@ -69,7 +69,7 @@ jobs:
           KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
           KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
         options: >-
-          --health-cmd "kafka-broker-api-versions.sh --bootstrap-server localhost:9092"
+          --health-cmd "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
