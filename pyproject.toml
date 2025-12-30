@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scitrera-rt-data"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
     { name = "Scitrera LLC" },
 ]
@@ -26,9 +26,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-redis = ["redis[hiredis]>=4.0.0", "msgpack>=1.0.0"]  # redis KV will often rely on msgpack
+redis = ["redis[hiredis]>=4.0.0", "msgpack>=1.0.0"]
 sql = ["SQLAlchemy>=2.0.0", "asyncpg>=0.27.0"]
-rmq = ["rstream", "msgpack>=1.0.0"]  # msgpack serialization is assumed for rmq
+rmq = ["rstream>=0.40.0", "msgpack>=1.0.0"]
+kafka = ["confluent-kafka>=2.0.0", "msgpack>=1.0.0"]
 dev = [
     "pytest",
     "pytest-asyncio",
@@ -38,7 +39,8 @@ all = [
     "SQLAlchemy>=2.0.0",
     "asyncpg>=0.27.0",
     "msgpack>=1.0.0",
-    "rstream",
+    "rstream>=0.40.0",
+    "confluent-kafka>=2.0.0"
 ]
 
 [tool.setuptools.packages.find]

@@ -53,6 +53,26 @@ jobs:
           --health-timeout 5s
           --health-retries 20
 
+      kafka:
+        image: apache/kafka:latest
+        ports:
+          - 9092:9092
+        env:
+          KAFKA_NODE_ID: 1
+          KAFKA_PROCESS_ROLES: broker,controller
+          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+          KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+          KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+        options: >-
+          --health-cmd "kafka-broker-api-versions.sh --bootstrap-server localhost:9092"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - name: Checkout (for tests)
         uses: actions/checkout@v4
@@ -80,16 +100,6 @@ jobs:
       - name: Install extra deps
         run: |
           python -m pip install "scitrera-rt-data[all,dev]"
-
-      #      - name: Wait for RabbitMQ Streams port
-      #        run: |
-      #          for i in {1..30}; do
-      #            (echo > /dev/tcp/rabbitmq/5552) >/dev/null 2>&1 && echo "RabbitMQ Streams ready" && exit 0
-      #            echo "Waiting for RabbitMQ Streams..."
-      #            sleep 2
-      #          done
-      #          echo "RabbitMQ Streams not ready in time" >&2
-      #          exit 1
 
       - name: Run tests
         env:

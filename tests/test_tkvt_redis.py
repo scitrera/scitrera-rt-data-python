@@ -2,7 +2,7 @@ import pytest
 import asyncio
 import pandas as pd
 import redis.asyncio as aioredis
-from scitrera_rt_data.tkvt.asyncio.tkvt_redis_streams import AsyncRedisBroker
+from scitrera_rt_data.tkvt.asyncio.redis_streams import AsyncRedisBroker
 
 @pytest.fixture
 async def redis_conn():

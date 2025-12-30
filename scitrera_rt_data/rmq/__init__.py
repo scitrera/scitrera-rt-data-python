@@ -1,6 +1,6 @@
 from typing import Optional
 
-from scitrera_app_framework import Variables, ext_parse_bool
+from scitrera_app_framework import Variables, ext_parse_bool, get_variables
 
 try:
     from rstream import (Consumer, Producer, AMQPMessage, ConsumerOffsetSpecification, SlasMechanism)
@@ -8,7 +8,8 @@ except ImportError:
     raise RuntimeError("rstream is not installed. `pip install rstream` to use rmq functionality.")
 
 
-def rmq_kwargs(v: Variables):
+def rmq_kwargs(v: Variables = None):
+    v = get_variables(v)  # use global variables if none provided
     return {
         # 'rmq_host': v.environ('RABBITMQ_HOST', default='localhost'),
         'rmq_port': v.environ('RABBITMQ_PORT', default=5551, type_fn=int),

@@ -111,7 +111,7 @@ class KafkaBroker(TKVTBroker):
                  logger=None, thread_per_topic=False,
                  ooo_warning=True,
                  **custom_config):
-        self._topic_prefix = f'{topic_prefix}.' or ''
+        self._topic_prefix = f'{topic_prefix}.' if topic_prefix else ''
         # TODO: validate bootstrap servers, etc.
         self._kafka_config = kafka_cfg = {
             'bootstrap.servers': bootstrap_servers,
@@ -283,7 +283,7 @@ class KafkaBroker(TKVTBroker):
                     else:
                         topic, key, value, timestamp = (
                             msg.topic(),
-                            msg.key().decode('utf-8'),
+                            msg.key().decode('utf-8') if msg.key() else '',
                             deserialize(msg.value()),
                             dt_from_unix_ms(msg.timestamp()[1])
                         )
