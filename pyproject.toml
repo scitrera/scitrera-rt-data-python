@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scitrera-rt-data"
+version = "0.0.2"
+authors = [
+    { name = "Scitrera LLC" },
+]
+description = "Utilities for real-time data applications"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "BSD-3-Clause" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pandas",
+    "pytz",
+    "python-dateutil",
+    "scitrera-app-framework",
+    "tenacity",
+]
+
+[project.optional-dependencies]
+redis = ["redis[hiredis]>=4.0.0", "msgpack>=1.0.0"]  # redis KV will often rely on msgpack
+sql = ["SQLAlchemy>=2.0.0", "asyncpg>=0.27.0"]
+rmq = ["rstream", "msgpack>=1.0.0"]  # msgpack serialization is assumed for rmq
+dev = [
+    "pytest",
+    "pytest-asyncio",
+]
+all = [
+    "redis[hiredis]>=4.0.0",
+    "SQLAlchemy>=2.0.0",
+    "asyncpg>=0.27.0",
+    "msgpack>=1.0.0",
+    "rstream",
+]
+
+[tool.setuptools.packages.find]
+include = [
+    "scitrera_rt_data",
+    "scitrera_rt_data.*",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

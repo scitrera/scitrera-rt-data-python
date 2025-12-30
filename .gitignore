@@ -1,0 +1,7 @@
+/.venv/
+/.idea/
+/dist/
+/scitrera_rt_data.egg-info/
+/.output.txt
+/.coverage
+/.github/act/

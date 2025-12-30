@@ -1,0 +1,118 @@
+name: Build and Test (Local via act)
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  build_and_test:
+    name: Build + Test
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+
+      postgres:
+        image: postgres:17-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd "pg_isready -U testuser -d testdb"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+      rabbitmq:
+        image: rabbitmq:4-management
+        ports:
+          - 5552:5552
+          - 5672:5672
+          - 15672:15672
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        volumes:
+          - "/home/drew/scitrera-rt-data/.ci/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro"
+          - "/home/drew/scitrera-rt-data/.ci/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro"
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install build + test tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade build twine pytest pytest-asyncio
+
+      - name: Build sdist and wheel
+        run: |
+          python -m build
+
+      - name: Check dist metadata
+        run: |
+          twine check dist/*
+
+      - name: Install built wheel
+        run: |
+          python -m pip install dist/*.whl
+
+      - name: Install extra deps (all + dev)
+        run: |
+          python -m pip install "scitrera-rt-data[all,dev]"
+
+#      - name: Wait for RabbitMQ Streams port
+#        run: |
+#          for i in {1..30}; do
+#            (echo > /dev/tcp/rabbitmq/5552) >/dev/null 2>&1 && echo "RabbitMQ Streams ready" && exit 0
+#            echo "Waiting for RabbitMQ Streams..."
+#            sleep 2
+#          done
+#          echo "RabbitMQ Streams not ready in time" >&2
+#          exit 1
+
+      - name: Run tests
+        env:
+          REDIS_HOST: "localhost"
+          REDIS_PORT: "6379"
+          REDIS_DB: "0"
+          REDIS_PASSWORD: ""
+          PG_DSN: "postgresql://testuser:testpass@localhost:5432/testdb"
+          RABBITMQ_DIRECT: "true"
+          RABBITMQ_MTLS: "false"
+          RABBITMQ_HOST: "localhost"
+          RABBITMQ_USERNAME: "guest"
+          RABBITMQ_PASSWORD: "guest"
+          RABBITMQ_PORT: "5552"
+          RABBITMQ_VHOST: "/"
+        run: |
+          pytest -q
