@@ -38,3 +38,18 @@ class TKVTLoggingHandler(logging.Handler):
         self._broker.flush()
 
     pass
+
+
+def attach_tktv_logging_handler(broker: TKVTBroker, topic: str, logger: Logger = logging.root, level=logging.NOTSET):
+    """
+    Attach a TKVT logging handler to the specified logger.
+
+    :param broker: The TKVT broker instance to use for logging.
+    :param topic: The topic to publish log records to.
+    :param logger: The logger to attach the handler to. Defaults to the root logger.
+    :param level: The logging level for the handler. Defaults to NOTSET.
+    :return: The attached TKVTLoggingHandler instance.
+    """
+    handler = TKVTLoggingHandler(broker, topic, level)
+    logger.addHandler(handler)
+    return handler
