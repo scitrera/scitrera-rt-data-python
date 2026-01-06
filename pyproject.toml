@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scitrera-rt-data"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
     { name = "Scitrera LLC" },
 ]
@@ -17,6 +17,10 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
 ]
+[project.urls]
+Homepage = "https://github.com/scitrera/scitrera-rt-data-python"
+Issues = "https://github.com/scitrera/scitrera-rt-data-python/issues"
+
 dependencies = [
     "pandas",
     "pytz",
