@@ -32,7 +32,7 @@ async def test_async_kafka_broker_publish_consume():
     await broker.consumer_loop_async(blocking=False)
 
     # Wait for consumer to be ready
-    await asyncio.sleep(2.0)
+    await asyncio.sleep(5.0)
 
     # Publish message
     timestamp = now()
