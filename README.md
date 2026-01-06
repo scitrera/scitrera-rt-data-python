@@ -11,6 +11,10 @@ Various utilities to support various data applications, including key-value stor
 - **Serialization**: Quick and dirty serialization/deserialization support for JSON, Msgpack, and Pickle.
 - **Date/Time Utilities**: Convenient wrappers around Pandas, pytz, and dateutil. The pandas Timestamp is the considered the authoritative datetime type--and various functions help convert between it and other formats.
 
+## Notes
+- The different TKVT implementations are at different stages of development.
+- A lot of functionality is still rough around the edges; just enough to get the job done for now.
+
 ## Installation
 
 ```bash
@@ -20,10 +24,13 @@ pip install scitrera-rt-data
 For specific features, you can install extras:
 
 ```bash
+pip install scitrera-rt-data[all]
 pip install scitrera-rt-data[redis]
 pip install scitrera-rt-data[sql]
 pip install scitrera-rt-data[rmq]
-pip install scitrera-rt-data[all]
+pip install scitrera-rt-data[kafka]
+
+pip install scitrera-rt-data[dev]
 ```
 
 ## License
