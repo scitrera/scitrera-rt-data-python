@@ -29,7 +29,7 @@ async def test_async_kafka_broker_publish_consume():
     await broker.register_consumer(topic, consumer)
 
     # Start consumer loop
-    loop_task = asyncio.create_task(broker.consumer_loop_async())
+    await broker.consumer_loop_async(blocking=False)
 
     # Wait for consumer to be ready
     await asyncio.sleep(2.0)
@@ -46,10 +46,6 @@ async def test_async_kafka_broker_publish_consume():
     assert v == {"data": "async_kafka"}
 
     await broker.abort()
-    try:
-        await asyncio.wait_for(loop_task, timeout=2.0)
-    except (asyncio.TimeoutError, asyncio.CancelledError):
-        pass
 
 
 def test_sync_kafka_broker_publish_consume():
