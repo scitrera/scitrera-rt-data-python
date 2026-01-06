@@ -17,10 +17,6 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
 ]
-[project.urls]
-Homepage = "https://github.com/scitrera/scitrera-rt-data-python"
-Issues = "https://github.com/scitrera/scitrera-rt-data-python/issues"
-
 dependencies = [
     "pandas",
     "pytz",
@@ -28,6 +24,10 @@ dependencies = [
     "scitrera-app-framework",
     "tenacity",
 ]
+
+[project.urls]
+Homepage = "https://github.com/scitrera/scitrera-rt-data-python"
+Issues = "https://github.com/scitrera/scitrera-rt-data-python/issues"
 
 [project.optional-dependencies]
 redis = ["redis[hiredis]>=4.0.0", "msgpack>=1.0.0"]
