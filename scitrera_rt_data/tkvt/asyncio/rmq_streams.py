@@ -30,9 +30,9 @@ DEFAULT_RMQ_LOAD_BALANCER_MODE = True
 DEFAULT_MTLS_MODE = True
 
 # default stream configuration
-DEFAULT_RMQ_STREAM_MAX_AGE: str = '7d'  # default is to keep up to 7 days of messages
+DEFAULT_RMQ_STREAM_MAX_AGE: str = '7d'  # the default is to keep up to 7 days of messages
 DEFAULT_RMQ_STREAM_MAX_BYTES: Optional[int] = None  # with no particular limit on the total size
-DEFAULT_RMQ_STREAM_MAX_SEGMENT_BYTES: Optional[int] = 50_000_000  # ~50MB  # but limit each segment to 50MB given low load expectation
+DEFAULT_RMQ_STREAM_MAX_SEGMENT_BYTES: Optional[int] = 50_000_000  # ~50MB # but limit each segment to 50MB given low load expectation
 
 
 # TODO: constants or enum for offset specification???
@@ -305,23 +305,43 @@ class AsyncRabbitMQStreamsBroker(AsyncTKVTBroker):
 
     async def ensure_topic_exists(self, topic: str, **kwargs):
         cleanup_cp = False
-        # if either consumer or producer exist, then we should use that rather than init more stuff
-        if self._consumer is not None:
-            cp = self._consumer
-        elif self._producer is not None:
-            cp = self._producer
-        else:
-            # we'll create a temporary producer instance and then discard it!
-            cp = self._make_producer(**kwargs)
-            cleanup_cp = True
+        cp = None
+        client = None
 
-        try:
-            client = await cp.default_client  # default client because otherwise rmq tries to look up a producer/consumer by stream name
+        def _setup_cp():
+            nonlocal cp, cleanup_cp
+            if cp is not None:
+                return
+            # if either consumer or producer exist, then we should use that rather than init more stuff
+            if self._consumer is not None:
+                cp = self._consumer
+            elif self._producer is not None:
+                cp = self._producer
+            else:
+                # we'll create a temporary producer instance and then discard it!
+                cp = self._make_producer(**kwargs)
+                cleanup_cp = True
+
+        async def _create_stream(depth=0):
+            nonlocal client
             # create topics with default settings
             try:
                 return await client.create_stream(topic, self._stream_kwargs)
+            except StreamDoesNotExist:
+                # basically we'll try again if this happens
+                if depth <= 1:
+                    return await _create_stream(depth + 1)
+                raise
             except StreamAlreadyExists:  # no exception if the stream already exists
-                pass
+                return None
+
+        try:
+            _setup_cp()
+            client = await cp.default_client  # default client because otherwise rmq tries to look up a producer/consumer by stream name
+
+            # create topics with default settings
+            await _create_stream()
+
         finally:
             # if we created a temporary producer, then we should make sure that we close it!
             if cleanup_cp:
@@ -428,10 +448,10 @@ class AsyncRabbitMQStreamsBroker(AsyncTKVTBroker):
             # (required to make exception catching for non-existent streams functional)
             result = await p.send_batch(topic, [msg])
         except (StreamDoesNotExist,):  # create stream and try again
-            p = self._get_producer(**kwargs)
             await self.ensure_topic_exists(topic)
+            p = self._get_producer(**kwargs)
             result = await p.send_batch(topic, [msg])
-        except (ConnectionResetError,):  # just try again
+        except (ConnectionResetError,):  # just try again  # TODO: better retry logic/management
             p = self._get_producer(**kwargs)
             result = await p.send_batch(topic, [msg])
         return
