@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scitrera-rt-data"
-version = "0.0.6"
+version = "0.0.7"
 authors = [
     { name = "Scitrera LLC" },
 ]
@@ -21,7 +21,7 @@ dependencies = [
     "pandas",
     "pytz",
     "python-dateutil",
-    "scitrera-app-framework>-0.0.68",
+    "scitrera-app-framework>=0.0.68",
     "tenacity",
 ]
 
